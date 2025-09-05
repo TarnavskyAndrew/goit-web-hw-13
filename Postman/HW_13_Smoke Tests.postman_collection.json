@@ -1,0 +1,1466 @@
+{
+	"info": {
+		"_postman_id": "ecdea91f-b7de-4621-8768-957f984464f2",
+		"name": "HW_13_Smoke Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13840346"
+	},
+	"item": [
+		{
+			"name": "signup",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// pm.environment.set(\"userEmail\", \"test@email.com\");\r",
+							"\r",
+							"// \"{{userPassword}}\"\r",
+							"pm.environment.set(\"userPassword\", \"MySecretPass123\");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// \"{{user_email}}\"\r",
+							"var jsonData = pm.response.json();\r",
+							"if (jsonData.user && jsonData.user.email) {\r",
+							"    pm.environment.set(\"user_email\", jsonData.user.email);\r",
+							"}\r",
+							"\r",
+							"// \"{{userPassword}}\" -> in Pre-request\r",
+							"\r",
+							"// test for successful user creation\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"// pm.test(\"Response does not contain error\", function () {\r",
+							"//     pm.expect(jsonData).to.not.have.property(\"error\");\r",
+							"// });\r",
+							"\r",
+							"\r",
+							"// pm.test(\"Status code is 409 Conflict\", function () {\r",
+							"//     pm.response.to.have.status(409);\r",
+							"// });\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"{{$randomUserName}}\",\r\n  \"email\": \"{{$randomEmail}}\",\r\n  \"password\": \"{{userPassword}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/auth/signup",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "resend_confirm_email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"\r",
+							"    pm.response.to.have.status(200);\r",
+							"\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"{{user_email}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/auth/resend_confirm_email",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth",
+						"resend_confirm_email"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "confirmed_email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"\r",
+							"    pm.response.to.have.status(200);\r",
+							"\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/auth/confirmed_email/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJGcmFuY2VzY29fQm9yZXIxMkBnbWFpbC5jb20iLCJzY29wZSI6ImVtYWlsX3ZlcmlmeSIsImV4cCI6MTc1NzE5NzIxNiwiaWF0IjoxNzU3MTEwODE2fQ.mveYyE9Bqn4CQi_SOTeaAXPWE2rgP1gF4UI9Z6KmgGY",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"auth",
+						"confirmed_email",
+						"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJGcmFuY2VzY29fQm9yZXIxMkBnbWFpbC5jb20iLCJzY29wZSI6ImVtYWlsX3ZlcmlmeSIsImV4cCI6MTc1NzE5NzIxNiwiaWF0IjoxNzU3MTEwODE2fQ.mveYyE9Bqn4CQi_SOTeaAXPWE2rgP1gF4UI9Z6KmgGY"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// seve response data to environment variables:\r",
+							"// {{access_token}} and {{refresh_token}}\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.environment.set(\"access_token\", jsonData.access_token);\r",
+							"pm.environment.set(\"refresh_token\", jsonData.refresh_token);\r",
+							"\r",
+							"\r",
+							"// test for successful login response\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "{{user_email}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{userPassword}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/auth/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "refresh_token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// seve response data to environment variables:\r",
+							"// {{access_token}} and {{refresh_token}}\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.environment.set(\"access_token\", jsonData.access_token);\r",
+							"pm.environment.set(\"refresh_token\", jsonData.refresh_token);\r",
+							"\r",
+							"\r",
+							"// test for successful login response\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"refresh_token\": \"{{refresh_token}}\"\r\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/auth/refresh_token",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth",
+						"refresh_token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add contacts",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// const randomPhone = \"380\" + Math.floor(Math.random() * (999999999 - 100000000)) + 100000000; // Генерируем случайное число\r",
+							"\r",
+							"// randomPhoneNumber\r",
+							"// const randomPhone = \"+380\" + Math.floor(Math.random() * (999999999 - 100000000)); // Генерируем случайное число\r",
+							"// pm.environment.set(\"randomPhoneNumber\", randomPhone); // Сохраняем его в переменную\r",
+							"\r",
+							"\r",
+							"//\"{{randomPhoneNumber}}\"\r",
+							"// Генерация случайного украинского номера телефона\r",
+							"const operatorCodes = [\"67\", \"68\", \"96\", \"97\", \"98\", \"99\", \"63\", \"73\", \"93\"]; // реальные коды операторов\r",
+							"const operator = operatorCodes[Math.floor(Math.random() * operatorCodes.length)];\r",
+							"const number = String(Math.floor(1000000 + Math.random() * 9000000)); // 7 цифр\r",
+							"\r",
+							"const phone = `+380${operator}${number}`;\r",
+							"pm.environment.set(\"randomPhoneNumber\", phone);\r",
+							"\r",
+							"\r",
+							"//\"{{randomBirthdayDate}}\"\r",
+							"function getRandomDate(start, end) {\r",
+							"    const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));\r",
+							"    const yyyy = date.getFullYear();\r",
+							"    const mm = String(date.getMonth() + 1).padStart(2, '0'); // месяц (0-based)\r",
+							"    const dd = String(date.getDate()).padStart(2, '0'); // день\r",
+							"    return `${yyyy}-${mm}-${dd}`;\r",
+							"}\r",
+							"// Пример: дата между 1960-01-01 и 2005-12-31\r",
+							"const birthday = getRandomDate(new Date(1960, 0, 1), new Date(2005, 11, 31));\r",
+							"pm.environment.set(\"randomBirthdayDate\", birthday);\r",
+							"\r",
+							"\r",
+							"//\"{{randomExtra}}\"\r",
+							"// Возможные значения поля \"extra\"\r",
+							"const extras = [\"friend\", \"colleague\", \"family\", \"partner\"];\r",
+							"// Выбираем случайное значение\r",
+							"const randomExtra = extras[Math.floor(Math.random() * extras.length)];\r",
+							"// Сохраняем в переменную окружения\r",
+							"pm.environment.set(\"randomExtra\", randomExtra);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"first_name\": \"{{$randomFirstName}}\",\r\n  \"last_name\": \"{{$randomLastName}}\",\r\n  \"email\": \"{{$randomEmail}}\",\r\n  \"phone\": \"{{randomPhoneNumber}}\",\r\n  \"birthday\": \"{{randomBirthdayDate}}\",\r\n  \"extra\": \"{{randomExtra}}\"\r\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/contacts",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"contacts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get contacts",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				},
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/contacts",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"contacts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "search contacts",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/contacts/search?q=@",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"contacts",
+						"search"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "@"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "request_reset_password",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"{{user_email}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/auth/request_reset_password",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth",
+						"request_reset_password"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "reset_password + {token}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// \"{{newUserPassword}}\"\r",
+							"pm.environment.set(\"newUserPassword\", \"MyNewSecretPass123\");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "multipart/form-data",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"new_password\": \"{{newUserPassword}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/auth/reset_password/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJGcmFuY2VzY29fQm9yZXIxMkBnbWFpbC5jb20iLCJzY29wZSI6InJlc2V0X3Bhc3N3b3JkIiwiZXhwIjoxNzU3MTE1MDUzfQ.qgFAHkAKxUGwZJ5KXSHujrGJRMkfVsR6GMamxm5AnA8",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"auth",
+						"reset_password",
+						"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJGcmFuY2VzY29fQm9yZXIxMkBnbWFpbC5jb20iLCJzY29wZSI6InJlc2V0X3Bhc3N3b3JkIiwiZXhwIjoxNzU3MTE1MDUzfQ.qgFAHkAKxUGwZJ5KXSHujrGJRMkfVsR6GMamxm5AnA8"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login - with new pass",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// seve response data to environment variables:\r",
+							"// {{access_token}} and {{refresh_token}}\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.environment.set(\"access_token\", jsonData.access_token);\r",
+							"pm.environment.set(\"refresh_token\", jsonData.refresh_token);\r",
+							"\r",
+							"\r",
+							"// \"{{newUserPassword}}\" -> in Pre-request\r",
+							"\r",
+							"// test for successful login response\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"\r",
+							"    pm.response.to.have.status(200);\r",
+							"\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// pm.environment.set(\"userEmail\", \"test@email.com\");\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "{{user_email}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{newUserPassword}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/auth/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get contacts",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				},
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/contacts",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"contacts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get contact by {id}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const data = pm.response.json();\r",
+							"pm.environment.set(\"contact_first_name\", data.first_name);\r",
+							"pm.environment.set(\"contact_last_name\", data.last_name);\r",
+							"pm.environment.set(\"contact_email\", data.email);\r",
+							"pm.environment.set(\"contact_phone\", data.phone);\r",
+							"pm.environment.set(\"contact_birthday\", data.birthday);\r",
+							"pm.environment.set(\"contact_extra\", data.extra);\r",
+							"pm.environment.set(\"contact_id\", data.id);\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				},
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/contacts/41",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"contacts",
+						"41"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "contact + {id}",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// \"{{new_first_name}}\"\r",
+							"pm.environment.set(\"new_first_name\", \"JOHNNY\");\r",
+							"\r",
+							"// \"{{new_birthday}}\"\r",
+							"pm.environment.set(\"new_birthday\", \"1990-09-12\");\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();\r",
+							"\r",
+							"// Comparison of each field request with response:\r",
+							"pm.test(\"first_name matches\", function () {\r",
+							"    pm.expect(response.first_name).to.eql(pm.environment.get(\"new_first_name\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"last_name matches\", function () {\r",
+							"    pm.expect(response.last_name).to.eql(pm.environment.get(\"contact_last_name\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"email matches\", function () {\r",
+							"    pm.expect(response.email).to.eql(pm.environment.get(\"contact_email\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"phone matches\", function () {\r",
+							"    pm.expect(response.phone).to.eql(pm.environment.get(\"contact_phone\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"birthday matches\", function () {\r",
+							"    pm.expect(response.birthday).to.eql(pm.environment.get(\"new_birthday\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"extra matches\", function () {\r",
+							"    pm.expect(response.extra).to.eql(pm.environment.get(\"contact_extra\"));\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"// const requestData = {\r",
+							"//     first_name: \"JOHNNY\",\r",
+							"//     last_name: pm.environment.get(\"contact_last_name\"),\r",
+							"//     email: pm.environment.get(\"contact_email\"),\r",
+							"//     phone: pm.environment.get(\"contact_phone\"),\r",
+							"//     birthday: \"1990-09-12\",\r",
+							"//     extra: pm.environment.get(\"contact_extra\"),\r",
+							"// };\r",
+							"\r",
+							"// const response = pm.response.json();\r",
+							"\r",
+							"// Object.keys(requestData).forEach(key => {\r",
+							"//     pm.test(`${key} matches`, function () {\r",
+							"//         pm.expect(response[key]).to.eql(requestData[key]);\r",
+							"//     });\r",
+							"// });\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"first_name\": \"{{new_first_name}}\", // Set the values ​​in Pre-request\r\n  \"last_name\": \"{{contact_last_name}}\", //parameters from response - \"get contact by {id}\"\"\r\n  \"email\": \"{{contact_email}}\",\r\n  \"phone\": \"{{contact_phone}}\",\r\n  \"birthday\": \"{{new_birthday}}\", // Set the values ​​in Pre-request\r\n  \"extra\": \"{{contact_extra}}\"\r\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/contacts/{{contact_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"contacts",
+						"{{contact_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "birthdays?days=7",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/contacts/upcoming-birthdays?days=7",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"contacts",
+						"upcoming-birthdays"
+					],
+					"query": [
+						{
+							"key": "days",
+							"value": "7"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELL contact + {id}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/contacts/43",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"contacts",
+						"43"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get contacts",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				},
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/contacts",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"contacts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user avatar",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// pm.environment.set(\"avatarPath\", \"F:\\\\_repository_\\\\goit-web-hw-13\\\\src\\\\static\\\\ava_default.jpg\");\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Avatar updated\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    var json = pm.response.json();\r",
+							"    pm.expect(json.avatar_url).to.include(\"cloudinary\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"// pm.test(\"Avatar updated\", function () {\r",
+							"//     pm.response.to.have.status(200);\r",
+							"\r",
+							"//     const json = pm.response.json();\r",
+							"\r",
+							"//     pm.expect(json).to.have.property(\"avatar_url\");\r",
+							"//     pm.expect(json.avatar_url).to.include(\"ava_default.jpg\");\r",
+							"// });\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"description": "ava_default.jpg",
+							"type": "file",
+							"src": "postman-cloud:///1f08a971-c447-4a70-8a37-9e32309bd052"
+						},
+						{
+							"key": "file",
+							"description": "pach_check.png",
+							"type": "file",
+							"src": "postman-cloud:///1f08a972-9d40-4160-9204-08dd85f2671b",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/users/avatar",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"avatar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user avatar",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// pm.environment.set(\"avatarPath\", \"F:\\\\_repository_\\\\goit-web-hw-13\\\\src\\\\static\\\\ava_default.jpg\");\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Avatar updated\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    var json = pm.response.json();\r",
+							"    pm.expect(json.avatar_url).to.include(\"cloudinary\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"// pm.test(\"Avatar updated\", function () {\r",
+							"//     pm.response.to.have.status(200);\r",
+							"\r",
+							"//     const json = pm.response.json();\r",
+							"\r",
+							"//     pm.expect(json).to.have.property(\"avatar_url\");\r",
+							"//     pm.expect(json.avatar_url).to.include(\"ava_default.jpg\");\r",
+							"// });\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"description": "ava_default.jpg",
+							"type": "file",
+							"src": "postman-cloud:///1f08a971-c447-4a70-8a37-9e32309bd052",
+							"disabled": true
+						},
+						{
+							"key": "file",
+							"description": "pach_check.png",
+							"type": "file",
+							"src": "postman-cloud:///1f08a972-9d40-4160-9204-08dd85f2671b"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/users/avatar",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"avatar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "logout",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// test for successful login response\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"\r",
+							"    pm.response.to.have.status(200);\r",
+							"\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// pm.environment.set(\"userEmail\", \"test@email.com\");\r",
+							"\r",
+							"// \"{{newUserPassword}}\"\r",
+							"pm.environment.set(\"newUserPassword\", \"MyNewSecretPass123\");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/auth/logout",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login as admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// seve response data to environment variables:\r",
+							"// {{access_token}} and {{refresh_token}}\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.environment.set(\"access_token\", jsonData.access_token);\r",
+							"pm.environment.set(\"refresh_token\", jsonData.refresh_token);\r",
+							"\r",
+							"\r",
+							"// \"{{newUserPassword}}\" -> in Pre-request\r",
+							"\r",
+							"// test for successful login response\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"\r",
+							"    pm.response.to.have.status(200);\r",
+							"\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// pm.environment.set(\"userEmail\", \"test@email.com\");\r",
+							"\r",
+							"// \"{{newUserPassword}}\"\r",
+							"pm.environment.set(\"newUserPassword\", \"MyNewSecretPass123\");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "admin@api.com",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "MyStrongPassword123",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/auth/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get users",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				},
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/users",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "change of role (ADMIN)",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"role\": \"moderator\"\r\n}\r\n\r\n// [\"admin\", \"moderator\", \"user\"]"
+				},
+				"url": {
+					"raw": "{{base_url}}/users/75/role",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"75",
+						"role"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

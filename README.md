@@ -8,7 +8,7 @@ It supports registration, login, email verification, password reset, JWT authent
 
 ---
 
-## 🛠 Features
+## Features
 - **User authentication** with JWT (access + refresh tokens).
 - **Email verification** after signup.
 - **Password reset** via email link with token.
